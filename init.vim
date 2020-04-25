@@ -94,6 +94,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'andrewradev/splitjoin.vim'
 Plug 'andymass/vim-matchup'
 Plug 'ap/vim-css-color'
+Plug 'godlygeek/tabular'
 Plug 'dag/vim-fish'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'elixir-editors/vim-elixir'
@@ -130,6 +131,10 @@ let g:ale_lint_on_enter = 1
 let g:ale_lint_on_save = 1
 let g:ale_sign_column_always = 1
 let g:ale_set_quickfix = 1
+let g:ale_sign_error = '✘'
+let g:ale_sign_warning = '⚠'
+highlight ALEErrorSign guibg=NONE guifg=red
+highlight ALEWarningSign guibg=NONE guifg=yellow
 
 " Matchup
 let g:matchup_matchparen_deferred = 1
@@ -170,12 +175,12 @@ let g:EditorConfig_exec_path = '/usr/local/bin/editorconfig/'
 let g:lightline = {'colorscheme': 'wombat'}
 let g:lightline.active = {'left': [['mode', 'paste'], ['gitbranch', 'filename', 'modified']], 'right': [['filetype', 'indent'], ['relativepath'], ['percent']]}
 "let g:lightline.component = {'lineinfo': ' %3l:%-2v'}
-let g:lightline.component_function = {'gitbranch': 'LightlineFugitive'}
-let g:lightline.component_function = {'indent': 'Indentation'}
+let g:lightline.component_function = {'gitbranch': 'LightlineFugitive', 'indent': 'Indentation'}
+" let g:lightline.component_function = {'indent': 'Indentation'}
 function! LightlineFugitive()
 	if exists('*FugitiveHead')
 		let branch = FugitiveHead()
-		return branch !=# '' ? ''.branch : ''
+		return branch !=# '' ? ' '.branch : ''
 	endif
 	return ''
 endfunction
@@ -194,8 +199,6 @@ function! s:check_back_space() abort
 	return !col || getline('.')[col - 1]  =~# '\s'
 endfunction
 
-" autocmd FileType vim set noexpandtab shiftwidth=4 softtabstop=0
-autocmd! User GoyoEnter Limelight
-autocmd! User GoyoLeave Limelight!
+" autocmd! User GoyoEnter Limelight
+" autocmd! User GoyoLeave Limelight!
 autocmd BufWritePost,TextChanged,TextChangedI * call lightline#update()
-"autocmd FileType vim,py,js,c,cpp,java,php autocmd BufWritePre <buffer> %s/\s\+$//e
