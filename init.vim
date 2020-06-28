@@ -37,27 +37,26 @@ set smarttab
 set textwidth=80
 " set formatprg=sqlparse
 " Mappings
+nnoremap <leader>ev :e $MYVIMRC<CR>
 nnoremap <silent> <leader>b :NERDTreeToggle<CR>
 nnoremap <silent> <leader>g :GitGutterToggle<CR>
-nnoremap <silent> <leader>? :ALEDetail<CR>
 nnoremap <silent> <leader>a :ArgWrap<CR>
 nnoremap <silent> <leader>z :Goyo<CR>
 nnoremap <silent> <leader>s :w<CR>
-nnoremap <silent> <leader>f :Autoformat<CR>
-nnoremap <silent> <leader>f :SQLU_Formatter<CR>
 nnoremap <silent> <leader>. @:
-nnoremap <leader>r :so ~/.config/nvim/init.vim<CR>
 nnoremap <leader>q <C-w>c
 nnoremap <leader>` :PlugInstall<CR>
-nnoremap <leader>t :term<CR>
 nnoremap \b :ls<CR>:b
 nnoremap <silent> <C-h> :bprev<CR>
 nnoremap <silent> <C-l> :bnext<CR>
-nnoremap <silent> <CR> <C-]> 
-nnoremap <silent> <BS> <C-T>
-nmap <silent> [ <Plug>(ale_previous_wrap)
-nmap <silent> ] <Plug>(ale_next_wrap)
-nnoremap <C-p> :Files<CR>
+nnoremap <silent> [ <Plug>(ale_previous_wrap)
+nnoremap <silent> ] <Plug>(ale_next_wrap)
+nnoremap <silent> <leader>f :ALEFix<CR>
+nnoremap <silent> <leader>? :ALEDetail<CR>
+nmap o o
+nmap O O
+nmap s s
+nmap S S
 nnoremap E $
 vnoremap E $
 vnoremap B ^
@@ -84,14 +83,8 @@ vnoremap <space> zf
 nnoremap = gg=G''
 nnoremap \ww <leader>ww
 nnoremap <silent> \- :Goyo<CR>
-nnoremap <leader>ev :e $MYVIMRC<CR>
 nnoremap <leader>ef :e ~/.config/fish/config.fish<CR>
-nnoremap <leader>en :e ~/Documents/notes.md<CR>
-nnoremap <leader>e0 :e ~/Documents/notes<CR>
 nnoremap <leader>ec :e ~/.editorconfig<CR>
-nnoremap <leader>ez :e ~/.config/nvim/colors/zeonica.vim<CR>
-nnoremap <leader>ey :e ~/.yabairc<CR>
-nnoremap <leader>es :e ~/.skhdrc<CR>
 nnoremap ! :!!<CR>
 nnoremap & :&&<CR>
 nnoremap <leader>da :1,$d<CR>
@@ -101,9 +94,8 @@ call plug#begin('~/.data/plugged')
 Plug 'andrewradev/splitjoin.vim'
 Plug 'andymass/vim-matchup'
 Plug 'ap/vim-css-color'
-Plug 'Chiel92/vim-autoformat'
 Plug 'ctrlpvim/ctrlp.vim'
-Plug 'dag/vim-fish'
+Plug 'stautob/vim-fish'
 Plug 'davidhalter/jedi-vim'
 Plug 'editorconfig/editorconfig-vim'
 Plug 'elixir-editors/vim-elixir'
@@ -118,7 +110,6 @@ Plug 'mattn/emmet-vim'
 Plug 'MaxMEllon/vim-jsx-pretty'
 Plug 'mileszs/ack.vim'
 Plug 'pangloss/vim-javascript'
-Plug 'alcesleo/vim-uppercase-sql'
 Plug 'ryanoasis/vim-devicons'
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug 'tmhedberg/SimpylFold'
@@ -129,10 +120,6 @@ Plug 'tpope/vim-surround'
 Plug 'vimwiki/vimwiki'
 Plug 'w0rp/ale'
 call plug#end()
-" AutoFormat
-let g:formatdef_sql = '"sqlformat reindent --keywords upper --identifiers lower -"'
-let g:formatters_sql = ['sql']
-
 " ALE
 let g:ale_linters = {
             \ 'javascript': ['eslint'],
@@ -146,12 +133,13 @@ let g:ale_sign_column_always = 1
 let g:ale_set_quickfix = 1
 let g:ale_sign_error = '✘'
 let g:ale_sign_warning = '⚠'
+let g:ale_sql_sqlformat_executable = 'sqlformat --comma_first COMMA_FIRST -k upper -r'
 let g:ale_fixers = {
             \   '*': ['remove_trailing_lines', 'trim_whitespace'],
-            \   'python': ['yapf'],
+            \   'python': ['black', 'isort'],
+            \   'javascript': ['eslint'],
+            \   'sql': ['sqlformat'],
             \}
-highlight ALEErrorSign guibg=NONE guifg=red
-highlight ALEWarningSign guibg=NONE guifg=yellow
 " Matchup
 let g:matchup_matchparen_deferred = 1
 let g:matchup_matchparen_hi_surround_always = 1
@@ -224,10 +212,16 @@ let g:vimwiki_list = [{'path': '~/iCloud/wiki', 'syntax': 'markdown'}]
 augroup remember_folds
     autocmd!
     au BufWinLeave ?* mkview 1
-    au BufWinEnter ?* silent loadview 1
+    au BufWinEnter ?* silent! loadview 1
 augroup END
+autocmd Filetype sql nnoremap <silent> <leader>f :%!sqlformat -i lower -s --indent_width 4 -k upper -r --comma_first COMMA_FIRST -<CR>
+autocmd Filetype sql vnoremap <silent> f :!sqlformat -i lower -s -k upper -r --indent_width 4 --comma_first COMMA_FIRST -<CR>
 if has('nvim')
     tnoremap <Esc> <C-\><C-n> tnoremap <C-v><Esc> <Esc>
+    nnoremap <leader>ez :e ~/.config/nvim/colors/zeonica.vim<CR>
+    nnoremap <leader>es :e ~/.config/nvim/colors/subliminal-zest.vim<CR>
+    nnoremap <leader>r :so ~/.config/nvim/init.vim<CR>
+    nnoremap <leader>t :term<CR>
 endif
 nmap <leader>y :call <SID>SynStack()<CR>
 function! <SID>SynStack()
